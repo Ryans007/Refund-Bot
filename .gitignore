@@ -1,5 +1,7 @@
+**/.env
 .env
 checkpoints.db
 test.ipynb
 /venv
 .idea
+__pycache__

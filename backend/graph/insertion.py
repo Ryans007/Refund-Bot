@@ -3,8 +3,13 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
-
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+os.environ['GOOGLE_API_KEY'] = os.getenv('GEMINI_API_KEY')
 
 PATH = Path(__file__).resolve().parent.parent / 'data/base_conhecimento_ifood_genai-exemplo.csv'
 
