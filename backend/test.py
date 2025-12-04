@@ -17,11 +17,11 @@ if __name__ == "__main__":
 
       print("\nProcessando...\n")
 
-      for s in graph.stream({'user_message': user_input}, thread):
-        print(s)
-
-      # result = graph.invoke({'user_message': user_input}, thread)
-      # print(result)
+      # for chunk in graph.stream({'user_message': user_input}, thread, stream_mode="updates"):
+      #   print(chunk)
+      result = graph.invoke({'user_message': user_input}, thread)
+      final_answer = result.get('final_answer')
+      print(f"Resposta: {final_answer}")
 
       print("\n" + "-" * 50 + "\n")
 
