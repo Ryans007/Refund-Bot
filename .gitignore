@@ -1,5 +1,5 @@
 **/.env
-.env
+backend/.env
 checkpoints.db
 test.ipynb
 /venv

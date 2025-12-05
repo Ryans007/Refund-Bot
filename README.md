@@ -17,20 +17,61 @@ POC de agente interno para decisões de reembolso/cancelamento utilizando RAG (R
 
 ## Tecnologias Utilizadas
 
-- **Python 3.12**
+- **Python 3.11**
+- **FastAPI**: API REST para comunicação com o sistema
+- **PostgreSQL**: Banco de dados para armazenamento de histórico
+- **Docker & Docker Compose**: Containerização e orquestração
 - **LangChain** & **LangGraph**: Framework para agentes e orquestração
 - **Google Gemini**: Modelos de linguagem (2.5-pro e 2.5-flash)
 - **FAISS**: Vector store para busca semântica
+- **SQLAlchemy**: ORM para interação com banco de dados
 - **Pydantic**: Validação de dados estruturados
 
 ## Como Instalar
 
 ### Pré-requisitos
 
-- Python 3.12 ou superior
+- **Docker** e **Docker Compose** instalados
 - Conta no Google AI Studio para obter API Key do Gemini
 
-### Passos de Instalação
+
+### Instalação
+
+1. **Clone o repositório**
+```bash
+git clone <url-do-repositorio>
+cd "Agente de Rembolso"
+```
+
+2. **Configure as variáveis de ambiente**
+
+Crie um arquivo `.env` na raiz do projeto:
+```env
+# API do Google Gemini
+GEMINI_API_KEY=sua_chave_api_aqui
+
+# Configurações do PostgreSQL
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_DB=reembolso_db
+POSTGRES_PORT=5432
+
+# Porta do backend
+BACKEND_PORT=8000
+```
+
+> **Nota**: Obtenha sua API Key em [Google AI Studio](https://aistudio.google.com/apikey)
+
+3. **Execute com Docker Compose**
+```bash
+docker-compose up -d --build
+```
+
+4. **Acesse a aplicação**
+- API: http://localhost:8000
+- Documentação da API: http://localhost:8000/docs
+
+### Instalação para Desenvolvimento Local
 
 1. **Clone o repositório**
 ```bash
@@ -51,6 +92,7 @@ source venv/bin/activate
 
 3. **Instale as dependências**
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
@@ -61,7 +103,6 @@ Crie um arquivo `.env` na raiz do projeto:
 GEMINI_API_KEY=sua_chave_api_aqui
 ```
 
-> **Nota**: Obtenha sua API Key em [Google AI Studio](https://aistudio.google.com/apikey)
 
 5. **Prepare a base de conhecimento**
 
@@ -69,29 +110,26 @@ O sistema já inclui uma base de conhecimento de exemplo em `backend/data/base_c
 
 ## Como Usar
 
-### Execução Básica
-
-1. **Navegue até a pasta backend**
+1. **Inicie os serviços**
 ```bash
-cd backend
+docker-compose up -d --build
 ```
 
-2. **Execute o chatbot**
+2. **Acesse a documentação interativa**
+Visite http://localhost:8000/docs para explorar a API
+
+3. **Faça uma requisição de exemplo**
 ```bash
-python main.py
+curl -X POST "http://localhost:8000/chat/" \
+     -H "Content-Type: application/json" \
+     -d '{"user_message": "O cliente quer reembolso, mas o pedido já saiu para entrega. Ainda é permitido?"}'
 ```
 
-3. **Interaja com o agente**
-```
-Chatbot de Reembolso iniciado! Digite 'sair' para encerrar a conversa!
-
-Você: O cliente quer reembolso, mas o pedido já saiu para entrega. Ainda é permitido?
+4. **Consulte o histórico de mensagens**
+```bash
+curl "http://localhost:8000/history/"
 ```
 
-4. **Para encerrar**
-```
-Você: sair
-```
 
 ### Exemplos de Perguntas
 
@@ -120,19 +158,38 @@ Resposta Final
 
 ```
 backend/
-├── main.py                      # Ponto de entrada
-├── assets                       # Contém a imagem do grafo
+├── index.py                     # API FastAPI (ponto de entrada)
+├── test.py                      # Chatbot local
+├── requirements.txt             # Dependências Python
+├── Dockerfile                   # Imagem Docker
+├── assets/                      # Contém a imagem do grafo
 ├── data/                        # Base de conhecimento (CSV)
 ├── faiss_index/                 # Índices de busca vetorial
+├── database/                    # Configuração do banco de dados
+│   ├── database.py              # SQLAlchemy setup
+│   └── checkpoints.db           # Base SQLite para checkpoints
+├── models/                      # Modelos SQLAlchemy
+│   └── message_model.py         # Modelo de mensagens
+├── routes/                      # Rotas da API FastAPI
+│   ├── chat_router.py           # Endpoint de chat
+│   └── history_router.py        # Endpoint de histórico
+├── schemes/                     # Schemas Pydantic
+│   └── message_scheme.py        # Validação de dados
 └── graph/
     ├── agents/                  # Definição dos agentes
     │   ├── classification_agent.py
     │   ├── reimbursement_agent.py
     │   └── revisor_agent.py
     ├── nodes/                   # Nós do grafo LangGraph
+    │   ├── classification_node.py
+    │   ├── reimbursement_node.py
+    │   └── revisor_node.py
     ├── tools/                   # Ferramentas (vector store)
+    │   └── vector_store_tool.py
     ├── graph.py                 # Orquestração do fluxo
-    └── state.py                 # Estado compartilhado
+    ├── state.py                 # Estado compartilhado
+    ├── insertion.py             # Criação do vector store
+    └── utils.py                 # Utilitários
 ```
 
 ## Sistema de Confiança
