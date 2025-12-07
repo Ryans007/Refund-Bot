@@ -1,4 +1,4 @@
-# Agente de Reembolso - POC com RAG
+# Bot de Reembolso - POC com RAG
 
 ## Descrição
 
@@ -53,7 +53,7 @@ Este projeto inclui:
 1. **Clone o repositório**
 ```bash
 git clone <url-do-repositorio>
-cd "Agente de Rembolso"
+cd "Refund-Bot"
 ```
 
 2. **Configure as variáveis de ambiente**
